@@ -18,6 +18,7 @@ public class listagemVIEW extends javax.swing.JFrame {
      */
     public listagemVIEW() {
         initComponents();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         listarProdutos();
     }
 
@@ -206,6 +207,7 @@ public class listagemVIEW extends javax.swing.JFrame {
             ProdutosDAO produtosdao = new ProdutosDAO();
             
             DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+            model.setColumnIdentifiers(new Object[]{"ID", "Nome", "Valor", "Status"});
             model.setNumRows(0);
             
             ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
@@ -219,6 +221,10 @@ public class listagemVIEW extends javax.swing.JFrame {
                 });
             }
         } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Não foi possível carregar a lista de produtos: " + e.getMessage(),
+                    "Erro ao consultar",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     
     }
