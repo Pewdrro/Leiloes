@@ -73,6 +73,59 @@ public class ProdutosDAO {
         }
         return listagem;
     }
+
+    public boolean venderProduto(int id) {
+        String sql = "UPDATE produtos SET status = ? WHERE id = ? AND status <> ?";
+
+        try (Connection conexao = new conectaDAO().connectDB()) {
+            if (conexao == null) {
+                return false;
+            }
+            try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+                comando.setString(1, "Vendido");
+                comando.setInt(2, id);
+                comando.setString(3, "Vendido");
+                return comando.executeUpdate() > 0;
+            }
+        } catch (SQLException erro) {
+            JOptionPane.showMessageDialog(null,
+                    "Não foi possível vender o produto: " + erro.getMessage(),
+                    "Erro ao vender",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    public ArrayList<ProdutosDTO> listarProdutosVendidos() {
+        String sql = "SELECT id, nome, valor, status FROM produtos "
+                + "WHERE status = ? ORDER BY id";
+        ArrayList<ProdutosDTO> vendidos = new ArrayList<>();
+
+        try (Connection conexao = new conectaDAO().connectDB()) {
+            if (conexao == null) {
+                return vendidos;
+            }
+            try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+                comando.setString(1, "Vendido");
+                try (ResultSet resultado = comando.executeQuery()) {
+                    while (resultado.next()) {
+                        ProdutosDTO produto = new ProdutosDTO();
+                        produto.setId(resultado.getInt("id"));
+                        produto.setNome(resultado.getString("nome"));
+                        produto.setValor(resultado.getInt("valor"));
+                        produto.setStatus(resultado.getString("status"));
+                        vendidos.add(produto);
+                    }
+                }
+            }
+        } catch (SQLException erro) {
+            JOptionPane.showMessageDialog(null,
+                    "Não foi possível listar os produtos vendidos: " + erro.getMessage(),
+                    "Erro ao consultar vendas",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        return vendidos;
+    }
     
     
     
